@@ -2,6 +2,23 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+## Environment & Database (Prisma + MySQL)
+
+- **Setup env**: copy `env.example` → `.env` and set `DATABASE_URL` to your real MySQL credentials.
+- **Run migrations**:
+
+```bash
+npm run prisma:generate
+npm run prisma:migrate
+```
+
+## Docker Compose
+
+- `docker compose up -d` will start **MySQL** + the **web** app.
+- The compose file **does not require** `.env.local`. You can optionally set variables in your shell (or a `.env` file used for compose interpolation), e.g.:
+  - `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `DB_PORT`
+  - `AUTH_SECRET`
+
 First, run the development server:
 
 ```bash

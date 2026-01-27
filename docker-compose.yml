@@ -1,0 +1,44 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: goka-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${DB_NAME:-goka}
+      MYSQL_USER: ${DB_USER:-goka}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-goka_password}
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: goka-web
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      # Prisma connection (uses the MySQL service + the same DB_* defaults)
+      DATABASE_URL: mysql://${DB_USER:-goka}:${DB_PASSWORD:-goka_password}@db:3306/${DB_NAME:-goka}
+      # Auth.js / NextAuth requires a secret in production
+      AUTH_SECRET: ${AUTH_SECRET:-dev-secret-change-me}
+      # Optional email providers
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      RESEND_FROM: ${RESEND_FROM:-otp@goka.dev}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+    depends_on:
+      - db
+    ports:
+      - "3000:3000"
+
+volumes:
+  db_data:
+
