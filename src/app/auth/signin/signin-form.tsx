@@ -17,15 +17,26 @@ export default function SignInForm() {
     if (!errorParam) return;
 
     let message: string | null = null;
-    if (errorParam === "OAuthAccountNotLinked") {
-      message =
-        "Email này đã được đăng ký bằng phương thức khác. Vui lòng đăng nhập bằng Email/Mật khẩu hoặc liên hệ hỗ trợ để liên kết tài khoản.";
+
+    switch (errorParam) {
+      case "OAuthAccountNotLinked":
+        message =
+          "Email này đã được đăng ký bằng phương thức đăng nhập khác. Vui lòng đăng nhập bằng Email/Mật khẩu tương ứng với email này, hoặc liên hệ hỗ trợ nếu bạn muốn liên kết thêm tài khoản Google/Facebook.";
+        break;
+      case "CredentialsSignin":
+        message = "Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.";
+        break;
+      case "AccessDenied":
+        message =
+          "Yêu cầu đăng nhập bị từ chối. Vui lòng thử lại hoặc chọn phương thức đăng nhập khác.";
+        break;
+      default:
+        message =
+          "Đã xảy ra lỗi trong quá trình đăng nhập. Vui lòng thử lại sau.";
     }
 
-    if (message) {
-      setError(message);
-      toast.error(message);
-    }
+    setError(message);
+    toast.error(message);
   }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
